@@ -34,3 +34,21 @@ O backend espera uma API compatível com o formato de chat completions (`message
 - Este é um protótipo funcional inicial, não um assistente de sistema completo.
 - Reconhecimento de voz depende dos serviços de voz disponíveis no aparelho e pode exigir internet.
 - O APK gerado pelo workflow é de depuração; não é um APK de publicação assinado.
+
+<!-- omgithub:readme:start -->
+## 🚀 Build, play, and remix with OMGithub
+
+**Remixed using [OMGithub.com](https://omgithub.com).**
+
+[![OMGithub](https://img.shields.io/badge/OMGithub-Open%20project-orange?style=for-the-badge)](https://omgithub.com/kamylo5/jarvis-br-android)
+[![GitHub](https://img.shields.io/badge/GitHub-Source-181717?logo=github&style=for-the-badge)](https://github.com/kamylo5/jarvis-br-android)
+
+- 🎮 [Open the project](https://omgithub.com/kamylo5/jarvis-br-android).
+- ✨ [Remix this project](https://omgithub.com/?remix=kamylo5%2Fjarvis-br-android).
+- 💻 [Explore the source](https://github.com/kamylo5/jarvis-br-android).
+- 🛠️ [Check build runs](https://github.com/kamylo5/jarvis-br-android/actions).
+- 🐛 [Report an issue](https://github.com/kamylo5/jarvis-br-android/issues).
+- 👤 [Explore the creator's projects](https://omgithub.com/kamylo5).
+- 🌍 [Create with OMGithub](https://omgithub.com).
+- 🧬 [Explore the remix source](https://github.com/kamylo5/jarvis-br-android).
+<!-- omgithub:readme:end -->
