@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#0a0d0f" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23080c0e'/%3E%3Cpath d='M12 12h40v10H24v8h22v10H24v12H12z' fill='%23ff7a00'/%3E%3C/svg%3E" />
+<title>FREE FIRE — Ilha Zero</title>
+<meta name="description" content="FREE FIRE: Ilha Zero — um battle royale em primeira pessoa direto no navegador. Salte, saqueie, sobreviva e conquiste o BOOYAH." />
+<link rel="stylesheet" href="./styles.css" />
+<link rel="preload" href="./assets/fonts/BarlowCondensed-Bold.ttf" as="font" type="font/ttf" crossorigin />
+<link rel="preload" href="./assets/fonts/Rajdhani-SemiBold.ttf" as="font" type="font/ttf" crossorigin />
+<script type="importmap">
+{
+  "imports": {
+    "three": "./vendor/three/three.module.js",
+    "three/addons/": "./vendor/three/addons/"
+  }
+}
+</script>
+</head>
+<body>
+<div id="app">
+  <canvas id="game" aria-label="Campo de batalha 3D"></canvas>
+
+  <div id="grain" aria-hidden="true"></div>
+  <div id="scanlines" aria-hidden="true"></div>
+
+  <!-- ───────────────────────── LANDING ───────────────────────── -->
+  <section id="landing" class="screen">
+    <div class="landing-shade"></div>
+    <header class="topbar">
+      <div class="brand-mini">
+        <span class="brand-mark">FF</span>
+        <span>ILHA&nbsp;ZERO</span>
+      </div>
+      <div class="server">
+        <span class="dot"></span> SERVIDOR&nbsp;BR-01
+        <span class="sep"></span>
+        <span class="ping">24 ms</span>
+      </div>
+      <div class="season">TEMPORADA&nbsp;<b>01</b> · PROTOCOLO&nbsp;FOGO</div>
+    </header>
+
+    <div class="landing-main">
+      <div class="eyebrow"><span></span> BATTLE ROYALE · 12 OPERADORES · 1 SOBREVIVENTE</div>
+      <h1 class="logo">
+        <span class="logo-free">FREE</span><span class="logo-fire">FIRE</span>
+      </h1>
+      <div class="logo-sub">
+        <span class="rule"></span>
+        ILHA ZERO
+        <span class="rule"></span>
+      </div>
+      <p class="lead">Salte na ilha, saqueie armamento e domine a zona.<br />O último de pé leva o <b>BOOYAH</b>.</p>
+
+      <div class="cta-row">
+        <button id="playBtn" class="btn-primary" type="button" aria-label="Play">
+          <span class="btn-glow"></span>
+          <span class="btn-label">Play</span>
+          <span class="btn-key">ENTER</span>
+        </button>
+        <div class="cta-note">
+          <b>GRÁTIS</b> · SEM DOWNLOAD<br />
+          <span>Melhor experiência com mouse e teclado</span>
+        </div>
+      </div>
+
+      <div class="hero-stats">
+        <div class="stat"><b id="statAlive">12</b><span>OPERADORES</span></div>
+        <div class="stat"><b>5</b><span>ZONAS</span></div>
+        <div class="stat"><b>4</b><span>PONTOS DE SAQUE</span></div>
+        <div class="stat"><b>∞</b><span>ADRENALINA</span></div>
+      </div>
+    </div>
+
+    <aside class="brief">
+      <div class="brief-head"><span>BRIEFING</span><span class="brief-code">OP-0711</span></div>
+      <div class="brief-map">
+        <canvas id="briefMap" width="300" height="300"></canvas>
+        <div class="brief-scan"></div>
+        <span class="map-tag tag-porto">PORTO</span>
+        <span class="map-tag tag-vila">VILA</span>
+        <span class="map-tag tag-farol">FAROL</span>
+        <span class="map-tag tag-ruinas">RUÍNAS</span>
+      </div>
+      <div class="brief-rows">
+        <div><span>ROTA DE QUEDA</span><b>SUL → NORTE</b></div>
+        <div><span>AMEAÇA</span><b class="hot">ALTA</b></div>
+        <div><span>ZONA</span><b>FECHANDO</b></div>
+      </div>
+      <div class="brief-foot">“A ilha não perdoa. Ela só cobra.”</div>
+    </aside>
+
+    <footer class="landing-foot">
+      <div class="controls-mini">
+        <div><kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd><span>MOVER</span></div>
+        <div><kbd>SHIFT</kbd><span>CORRER</span></div>
+        <div><kbd>ESPAÇO</kbd><span>SALTAR</span></div>
+        <div><kbd>R</kbd><span>RECARREGAR</span></div>
+        <div><kbd>1</kbd><kbd>2</kbd><span>ARMAS</span></div>
+        <div><kbd>E</kbd><span>SAQUEAR</span></div>
+      </div>
+      <div class="landing-links">
+        <button id="settingsBtn" class="link-btn" type="button">AJUSTES</button>
+        <span>·</span>
+        <button id="helpBtn" class="link-btn" type="button">COMO JOGAR</button>
+      </div>
+    </footer>
+
+    <div id="settingsPanel" class="panel" hidden>
+      <div class="panel-head"><h2>AJUSTES</h2><button class="panel-close" data-close="settingsPanel" type="button">✕</button></div>
+      <label class="field">
+        <span>SENSIBILIDADE <b id="sensVal">1.0</b></span>
+        <input id="sensRange" type="range" min="0.3" max="2.2" step="0.05" value="1" />
+      </label>
+      <label class="field">
+        <span>QUALIDADE</span>
+        <select id="qualitySelect">
+          <option value="high">ALTA — sombras + bloom</option>
+          <option value="medium">MÉDIA — desempenho</option>
+          <option value="low">BAIXA — máximo FPS</option>
+        </select>
+      </label>
+      <label class="field inline">
+        <span>SOM</span>
+        <input id="soundToggle" type="checkbox" checked />
+      </label>
+      <label class="field inline">
+        <span>MIRA COM BOTÃO DIREITO</span>
+        <input id="adsToggle" type="checkbox" checked />
+      </label>
+      <p class="panel-note">As preferências ficam salvas neste navegador.</p>
+    </div>
+
+    <div id="helpPanel" class="panel" hidden>
+      <div class="panel-head"><h2>COMO JOGAR</h2><button class="panel-close" data-close="helpPanel" type="button">✕</button></div>
+      <ol class="help-list">
+        <li><b>SOBREVIVA.</b> Elimine os 11 operadores rivais antes que a zona consuma você.</li>
+        <li><b>SAQUEIE.</b> Chegue perto de caixas brilhantes para pegar munição, vida e colete.</li>
+        <li><b>MOVA-SE.</b> Use cobertura, corra e salte. A zona encolhe a cada rodada.</li>
+        <li><b>ATIRE.</b> Clique para disparar, botão direito para mirar, R para recarregar.</li>
+        <li><b>BOOYAH.</b> Seja o último de pé para vencer a partida.</li>
+      </ol>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── HUD ───────────────────────── -->
+  <section id="hud" hidden>
+    <div class="hud-vignette"></div>
+
+    <div class="compass-wrap">
+      <div class="compass-line"></div>
+      <div id="compassStrip" class="compass-strip"></div>
+      <div class="compass-caret"></div>
+      <div id="zoneBanner" class="zone-banner">
+        <span class="zone-label">ZONA</span>
+        <b id="zoneTimer">02:00</b>
+        <span id="zoneState" class="zone-state">ESTÁVEL</span>
+      </div>
+    </div>
+
+    <div class="top-left">
+      <div class="match-id">PARTIDA&nbsp;<b>#0711</b></div>
+      <div class="alive"><span class="alive-num" id="aliveNum">12</span><span class="alive-label">VIVOS</span></div>
+    </div>
+
+    <div class="top-right">
+      <div class="minimap-frame">
+        <canvas id="minimap" width="240" height="240"></canvas>
+        <div class="minimap-ring"></div>
+        <div class="minimap-compass">N</div>
+        <div class="minimap-coords" id="minimapCoords">X 000 · Z 000</div>
+      </div>
+      <div class="kills-chip"><span id="killCount">0</span><small>ABATES</small></div>
+    </div>
+
+    <div id="killfeed" class="killfeed"></div>
+
+    <div class="bottom-left">
+      <div class="operator-card">
+        <div class="operator-avatar"><span>FF</span><i class="lv">01</i></div>
+        <div class="operator-info">
+          <div class="operator-name">VOCÊ <span class="op-tag">ÁGUIA&nbsp;1</span></div>
+          <div class="bar-row">
+            <div class="bar health"><i id="healthBar"></i><span id="healthText">100</span></div>
+            <div class="bar armor"><i id="armorBar"></i><span id="armorText">50</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="equipment-row">
+        <div class="equip"><kbd>E</kbd><span>SAQUEAR</span></div>
+        <div class="equip"><kbd>Q</kbd><span>TROCAR</span></div>
+        <div class="equip"><kbd>SHIFT</kbd><span>CORRER</span></div>
+      </div>
+    </div>
+
+    <div class="bottom-right">
+      <div class="weapon-card">
+        <div class="weapon-top">
+          <span id="weaponName">FÚRIA AR</span>
+          <span class="fire-mode" id="fireMode">AUTO</span>
+        </div>
+        <div class="weapon-ammo">
+          <b id="ammoMag">30</b><span class="slash">/</span><span id="ammoReserve">150</span>
+        </div>
+        <div class="mag-pips" id="magPips"></div>
+        <div class="weapon-slots">
+          <span class="slot active" id="slot1">1 · AR</span>
+          <span class="slot" id="slot2">2 · SMG</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="crosshair" id="crosshair">
+      <span class="ch ch-t"></span><span class="ch ch-r"></span><span class="ch ch-b"></span><span class="ch ch-l"></span>
+      <span class="ch-dot"></span>
+    </div>
+    <div class="hitmarker" id="hitmarker"><i></i><i></i><i></i><i></i></div>
+    <div class="scope" id="scope"><span></span></div>
+
+    <div class="damage-dirs" id="damageDirs"></div>
+    <div class="danger-vignette" id="dangerVignette"></div>
+    <div class="zone-warning" id="zoneWarning">FORA DA ZONA SEGURA<span>−4 HP/s</span></div>
+
+    <div id="toast" class="toast"></div>
+    <div id="pickupPrompt" class="pickup-prompt"><kbd>E</kbd><span id="pickupText">SAQUEAR</span></div>
+    <div id="damageNumbers" class="damage-numbers"></div>
+
+    <div class="debug" id="debug"></div>
+    <div class="lock-hint" id="lockHint">CLIQUE PARA CAPTURAR O MOUSE</div>
+  </section>
+
+  <!-- ───────────────────────── PAUSE ───────────────────────── -->
+  <section id="pause" class="screen overlay-screen" hidden>
+    <div class="overlay-card">
+      <div class="eyebrow"><span></span> PARTIDA PAUSADA</div>
+      <h2 class="overlay-title">INTERVALO&nbsp;TÁTICO</h2>
+      <p class="overlay-sub">A ilha espera. Respire, ajuste a mira e volte.</p>
+      <div class="overlay-actions">
+        <button id="resumeBtn" class="btn-primary" type="button"><span class="btn-label">Continuar</span></button>
+        <button id="quitBtn" class="btn-secondary" type="button">SAIR PARA O MENU</button>
+      </div>
+      <div class="pause-stats">
+        <div><span>ABATES</span><b id="pauseKills">0</b></div>
+        <div><span>PRECISÃO</span><b id="pauseAcc">0%</b></div>
+        <div><span>TEMPO</span><b id="pauseTime">00:00</b></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ───────────────────────── RESULT ───────────────────────── -->
+  <section id="result" class="screen overlay-screen" hidden>
+    <div class="overlay-card result-card">
+      <div id="resultEyebrow" class="eyebrow"><span></span> FIM DE PARTIDA</div>
+      <h2 id="resultTitle" class="overlay-title">BOOYAH!</h2>
+      <p id="resultSub" class="overlay-sub">Você dominou a Ilha Zero.</p>
+      <div class="result-stats">
+        <div><b id="resKills">0</b><span>ABATES</span></div>
+        <div><b id="resPlace">#1</b><span>COLOCAÇÃO</span></div>
+        <div><b id="resAcc">0%</b><span>PRECISÃO</span></div>
+        <div><b id="resTime">00:00</b><span>TEMPO</span></div>
+      </div>
+      <div class="overlay-actions">
+        <button id="againBtn" class="btn-primary" type="button"><span class="btn-label">Jogar novamente</span></button>
+        <button id="menuBtn" class="btn-secondary" type="button">VOLTAR AO MENU</button>
+      </div>
+      <div class="result-quote" id="resultQuote">“O fogo não escolhe. Ele consome.”</div>
+    </div>
+  </section>
+
+  <div id="loading" class="screen loading-screen">
+    <div class="load-inner">
+      <div class="brand-mark big">FF</div>
+      <div class="load-title">ILHA ZERO</div>
+      <div class="load-bar"><i id="loadBar"></i></div>
+      <div class="load-status" id="loadStatus">PREPARANDO O TERRENO…</div>
+    </div>
+  </div>
+</div>
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>
